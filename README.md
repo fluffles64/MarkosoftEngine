@@ -9,8 +9,7 @@ Developed as part of a university assignment for the *Game Engines* class, this 
 ## Media
 
 <div style="display:flex; justify-content:center;">
-    <img src="https://github.com/fluffles64/MarkosoftEngine/assets/61605339/ce765652-e5b6-42c4-ab14-02a4916c0371" alt="Gif" style="width: 50%; max-width: 300px;"/>
-    <img src="https://github.com/fluffles64/MarkosoftEngine/assets/61605339/f95217b0-5d75-40d5-88d8-9e74f4006a7f" alt="Image" style="width: 49%; max-width: 300px;"/>
+    <img src="https://github.com/fluffles64/MarkosoftEngine/assets/61605339/ce765652-e5b6-42c4-ab14-02a4916c0371" alt="Gif" style="width: 100%;"/>
 </div>
 
 ## Features
@@ -19,6 +18,11 @@ Developed as part of a university assignment for the *Game Engines* class, this 
 - **Multithreading Capabilities**: Features multithreading to render thousands of concurrent objects with support of up to 4 threads.
 - **SDL2 API**: Uses SDL2 for rendering graphics and handling user input.
 - **Sample Game**: Includes a demonstration game to illustrate the engine's capabilities and functionalities.
+
+## Changelog
+
+- **v1.0.0**:
+  - Addressed a known issue that caused FPS to drop when rendering too many textures at once. This is no longer the case.
 
 ## Requirements
 
