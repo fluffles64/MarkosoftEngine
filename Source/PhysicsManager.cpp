@@ -3,59 +3,66 @@
 int threadFunction(void* data)
 {
 	int index = (int)data;
-	// Main loop flag
 	bool quit = false;
+
+	// Cache singleton instances
+	auto& physics = PhysicsManager::GetInstance();
+	auto& objectManager = ObjectManager::GetInstance();
+
 	while (!quit)
 	{
-		if (SDL_mutexP(PhysicsManager::GetInstance().mut[index]) == -1)
+		if (SDL_mutexP(physics.mut[index]) == -1)
 		{
 			fprintf(stderr, "Couldn't lock mutex\n");
 			exit(-1);
 		}
-			
-		for (int i = 0; i < ObjectManager::GetInstance().objects.size(); i++)
+
+		// Iterate over the objects in the object manager
+		for (Object* obj : objectManager.objects)
 		{
-			//// Check if the object has settled
-			//Object* obj = ObjectManager::GetInstance().objects[i];
-			//if (obj->Settled)
-			//{
-			//	continue; // Skip the calculation for settled objects
-			//}
+			if (obj->settled) { continue; }
 
-			int myX = ObjectManager::GetInstance().objects[i]->mPosX / 4;
-			int myY = ObjectManager::GetInstance().objects[i]->mPosY / 4;
+			int myX = obj->mPosX / 4;
+			int myY = obj->mPosY / 4;
 
-			if (index == 0) {
+			if (index == 0)
+			{
 				// Sand simulation
-				if (ObjectManager::GetInstance().objects[i]->objPath == "../../media/sand.png")
+				if (obj->type == ObjectType::Sand)
 				{
-					if (myY < 270 && myY >= 0 && myX < 480 && myX >= 0) {
-						if (PhysicsManager::GetInstance().mat[myX][myY + 1] < 1)
+					if (myY < physics.GRID_HEIGHT && myY >= 0 && myX < physics.GRID_WIDTH && myX >= 0)
+					{
+						if (physics.grid[myX][myY + 1] < 1)
 						{
-							PhysicsManager::GetInstance().mat[myX][myY] = 0;
-							ObjectManager::GetInstance().objects[i]->mPosY += 4;
-							PhysicsManager::GetInstance().mat[myX][myY + 1] = 1;
+							physics.grid[myX][myY] = 0;
+							obj->mPosY += 4;
+							physics.grid[myX][myY + 1] = 1;
 						}
-						else if (PhysicsManager::GetInstance().mat[myX][myY + 1] == 2)
+						else if (physics.grid[myX][myY + 1] == 2 || physics.grid[myX][myY + 1] == 3)
 						{
-							PhysicsManager::GetInstance().mat[myX][myY] = 0;
-							ObjectManager::GetInstance().objects[i]->mPosY += 4;
-							PhysicsManager::GetInstance().mat[myX][myY + 1] = 1;
+							physics.grid[myX][myY] = 0;
+							obj->mPosY += 4;
+							physics.grid[myX][myY + 1] = 1;
 						}
-						else if (PhysicsManager::GetInstance().mat[myX + 1][myY + 1] < 1 && myX > 0)
+						else if (physics.grid[myX + 1][myY + 1] < 1 && myX > 0)
 						{
-							PhysicsManager::GetInstance().mat[myX][myY] = 0;
-							ObjectManager::GetInstance().objects[i]->mPosX += 4;
-							ObjectManager::GetInstance().objects[i]->mPosY += 4;
-							PhysicsManager::GetInstance().mat[myX + 1][myY + 1] = 1;
+							physics.grid[myX][myY] = 0;
+							obj->mPosX += 4;
+							obj->mPosY += 4;
+							physics.grid[myX + 1][myY + 1] = 1;
 						}
-						else if (PhysicsManager::GetInstance().mat[myX - 1][myY + 1] < 1 && myX > 0)
+						else if (physics.grid[myX - 1][myY + 1] < 1 && myX > 0)
 						{
-							PhysicsManager::GetInstance().mat[myX][myY] = 0;
-							ObjectManager::GetInstance().objects[i]->mPosX -= 4;
-							ObjectManager::GetInstance().objects[i]->mPosY += 4;
-							PhysicsManager::GetInstance().mat[myX - 1][myY + 1] = 1;
+							physics.grid[myX][myY] = 0;
+							obj->mPosX -= 4;
+							obj->mPosY += 4;
+							physics.grid[myX - 1][myY + 1] = 1;
 						}
+						//else
+						//{
+						//	// TODO: Revise the algorithm so that objects can settle without bumping into eachother prematurely
+						//	obj->settled = true;
+						//}
 					}
 				}
 			}
@@ -63,55 +70,46 @@ int threadFunction(void* data)
 			if (index == 1)
 			{
 				// Water simulation
-				if (ObjectManager::GetInstance().objects[i]->objPath == "../../media/water.png" && ObjectManager::GetInstance().objects[i]->isRenderable)
+				if (obj->type == ObjectType::Water && obj->isRenderable)
 				{
-					if (myY < 270 && myY >= 0 && myX < 480 && myX >= 0)
+					if (myY < physics.GRID_HEIGHT && myY >= 0 && myX < physics.GRID_WIDTH && myX >= 0)
 					{
-
 						// Down
-						if (PhysicsManager::GetInstance().mat[myX][myY + 1] < 1)
+						if (physics.grid[myX][myY + 1] < 1)
 						{
-							PhysicsManager::GetInstance().mat[myX][myY] = 0;
-							ObjectManager::GetInstance().objects[i]->mPosY += 4;
-							PhysicsManager::GetInstance().mat[myX][myY + 1] = 2;
+							physics.grid[myX][myY] = 0;
+							obj->mPosY += 4;
+							physics.grid[myX][myY + 1] = 2;
 						}
-						// Sand interaction
-						/*else if (PhysicsManager::GetInstance().mat[myX][myY - 1] == 1) {
-							PhysicsManager::GetInstance().mat[myX][myY] = 0;
-							ObjectManager::GetInstance().objects[i]->mPosY -= 4;
-							PhysicsManager::GetInstance().mat[myX][myY - 1] = 2;
-							// ObjectManager::GetInstance().objects[i]->isRenderable = false;
-							// ObjectManager::GetInstance().objects[i]->~Object();
-						}*/
 						// Down Right
-						else if (PhysicsManager::GetInstance().mat[myX + 1][myY + 1] < 1 && myX > 0 && myX < 480)
+						else if (physics.grid[myX + 1][myY + 1] < 1 && myX > 0 && myX < physics.GRID_WIDTH)
 						{
-							PhysicsManager::GetInstance().mat[myX][myY] = 0;
-							ObjectManager::GetInstance().objects[i]->mPosX += 4;
-							ObjectManager::GetInstance().objects[i]->mPosY += 4;
-							PhysicsManager::GetInstance().mat[myX + 1][myY + 1] = 2;
+							physics.grid[myX][myY] = 0;
+							obj->mPosX += 4;
+							obj->mPosY += 4;
+							physics.grid[myX + 1][myY + 1] = 2;
 						}
 						// Down left
-						else if (PhysicsManager::GetInstance().mat[myX - 1][myY + 1] < 1 && myX > 0 && myX < 480)
+						else if (physics.grid[myX - 1][myY + 1] < 1 && myX > 0 && myX < physics.GRID_WIDTH)
 						{
-							PhysicsManager::GetInstance().mat[myX][myY] = 0;
-							ObjectManager::GetInstance().objects[i]->mPosX -= 4;
-							ObjectManager::GetInstance().objects[i]->mPosY += 4;
-							PhysicsManager::GetInstance().mat[myX - 1][myY + 1] = 2;
+							physics.grid[myX][myY] = 0;
+							obj->mPosX -= 4;
+							obj->mPosY += 4;
+							physics.grid[myX - 1][myY + 1] = 2;
 						}
 						// Right
-						else if (PhysicsManager::GetInstance().mat[myX + 1][myY] < 1 && myX > 0 && myX < 480)
+						else if (physics.grid[myX + 1][myY] < 1 && myX > 0 && myX < physics.GRID_WIDTH)
 						{
-							PhysicsManager::GetInstance().mat[myX][myY] = 0;
-							ObjectManager::GetInstance().objects[i]->mPosX += 4;
-							PhysicsManager::GetInstance().mat[myX + 1][myY] = 2;
+							physics.grid[myX][myY] = 0;
+							obj->mPosX += 4;
+							physics.grid[myX + 1][myY] = 2;
 						}
 						// Left
-						else if (PhysicsManager::GetInstance().mat[myX - 1][myY] < 1 && myX > 0 && myX < 480)
+						else if (physics.grid[myX - 1][myY] < 1 && myX > 0 && myX < physics.GRID_WIDTH)
 						{
-							PhysicsManager::GetInstance().mat[myX][myY] = 0;
-							ObjectManager::GetInstance().objects[i]->mPosX -= 4;
-							PhysicsManager::GetInstance().mat[myX - 1][myY] = 2;
+							physics.grid[myX][myY] = 0;
+							obj->mPosX -= 4;
+							physics.grid[myX - 1][myY] = 2;
 						}
 					}
 				}
@@ -120,86 +118,86 @@ int threadFunction(void* data)
 			if (index == 2)
 			{
 				// Wood simulation
-				if (myY < 270 && myY >= 0 && myX < 480 && myX >= 0) {
-					if (ObjectManager::GetInstance().objects[i]->objPath == "../../media/wood.png" && ObjectManager::GetInstance().objects[i]->isRenderable)
+				if (myY < physics.GRID_HEIGHT && myY >= 0 && myX < physics.GRID_WIDTH && myX >= 0)
+				{
+					if (obj->type == ObjectType::Wood && obj->isRenderable)
 					{
-						if (myY < 270 && myY >= 0 && myX < 480 && myX >= 0)
+						if (myY < physics.GRID_HEIGHT && myY >= 0 && myX < physics.GRID_WIDTH && myX >= 0)
 						{
-							if (PhysicsManager::GetInstance().mat[myX][myY] < 1)
+							if (physics.grid[myX][myY] < 1)
 							{
-								PhysicsManager::GetInstance().mat[myX][myY] = 4;
+								physics.grid[myX][myY] = 4;
 							}
-							else if (PhysicsManager::GetInstance().mat[myX][myY - 1] == 3)
+							else if (physics.grid[myX][myY - 1] == 3)
 							{
-								PhysicsManager::GetInstance().mat[myX][myY] = 0;
-								ObjectManager::GetInstance().objects[i]->isRenderable = false;
-								ObjectManager::GetInstance().objects[i]->~Object();
+								physics.grid[myX][myY] = 0;
+								obj->isRenderable = false;
+								obj->~Object();
 							}
 						}
 					}
 					// Lava simulation
-					if (ObjectManager::GetInstance().objects[i]->objPath == "../../media/lava.png" && ObjectManager::GetInstance().objects[i]->isRenderable)
+					if (obj->type == ObjectType::Lava && obj->isRenderable)
 					{
 						// Down
-						if (PhysicsManager::GetInstance().mat[myX][myY + 1] < 1)
+						if (physics.grid[myX][myY + 1] < 1)
 						{
-							PhysicsManager::GetInstance().mat[myX][myY] = 0;
-							ObjectManager::GetInstance().objects[i]->mPosY += 4;
-							PhysicsManager::GetInstance().mat[myX][myY + 1] = 3;
+							physics.grid[myX][myY] = 0;
+							obj->mPosY += 4;
+							physics.grid[myX][myY + 1] = 3;
 						}
 						// Down Right
-						else if (PhysicsManager::GetInstance().mat[myX + 1][myY + 1] < 1 && myX > 0 && myX < 480)
+						else if (physics.grid[myX + 1][myY + 1] < 1 && myX > 0 && myX < physics.GRID_WIDTH)
 						{
-							PhysicsManager::GetInstance().mat[myX][myY] = 0;
-							ObjectManager::GetInstance().objects[i]->mPosX += 4;
-							ObjectManager::GetInstance().objects[i]->mPosY += 4;
-							PhysicsManager::GetInstance().mat[myX + 1][myY + 1] = 3;
+							physics.grid[myX][myY] = 0;
+							obj->mPosX += 4;
+							obj->mPosY += 4;
+							physics.grid[myX + 1][myY + 1] = 3;
 						}
 						// Down left
-						else if (PhysicsManager::GetInstance().mat[myX - 1][myY + 1] < 1 && myX > 0 && myX < 480)
+						else if (physics.grid[myX - 1][myY + 1] < 1 && myX > 0 && myX < physics.GRID_WIDTH)
 						{
-							PhysicsManager::GetInstance().mat[myX][myY] = 0;
-							ObjectManager::GetInstance().objects[i]->mPosX -= 4;
-							ObjectManager::GetInstance().objects[i]->mPosY += 4;
-							PhysicsManager::GetInstance().mat[myX - 1][myY + 1] = 3;
+							physics.grid[myX][myY] = 0;
+							obj->mPosX -= 4;
+							obj->mPosY += 4;
+							physics.grid[myX - 1][myY + 1] = 3;
 						}
 						// Right
-						else if (PhysicsManager::GetInstance().mat[myX + 1][myY] < 1 && myX > 0 && myX < 480)
+						else if (physics.grid[myX + 1][myY] < 1 && myX > 0 && myX < physics.GRID_WIDTH)
 						{
-							PhysicsManager::GetInstance().mat[myX][myY] = 0;
-							ObjectManager::GetInstance().objects[i]->mPosX += 4;
-							PhysicsManager::GetInstance().mat[myX + 1][myY] = 3;
+							physics.grid[myX][myY] = 0;
+							obj->mPosX += 4;
+							physics.grid[myX + 1][myY] = 3;
 						}
 						// Left
-						else if (PhysicsManager::GetInstance().mat[myX - 1][myY] < 1 && myX > 0 && myX < 480)
+						else if (physics.grid[myX - 1][myY] < 1 && myX > 0 && myX < physics.GRID_WIDTH)
 						{
-							PhysicsManager::GetInstance().mat[myX][myY] = 0;
-							ObjectManager::GetInstance().objects[i]->mPosX -= 4;
-							PhysicsManager::GetInstance().mat[myX - 1][myY] = 3;
+							physics.grid[myX][myY] = 0;
+							obj->mPosX -= 4;
+							physics.grid[myX - 1][myY] = 3;
 						}
 					}
 				}
 			}
-			if (index == 3) {
+			if (index == 3)
+			{
 				// Smoke simulation
-				if (ObjectManager::GetInstance().objects[i]->objPath == "../../media/smoke.png" && ObjectManager::GetInstance().objects[i]->isRenderable)
+				if (obj->type == ObjectType::Smoke && obj->isRenderable)
 				{
-					if (ObjectManager::GetInstance().objects[i]->mPosY > 0)
+					if (obj->mPosY > 0)
 					{
-						ObjectManager::GetInstance().objects[i]->mPosY -= 4;
+						obj->mPosY -= 4;
 					}
 					else
 					{
-						ObjectManager::GetInstance().objects[i]->isRenderable = false;
-						ObjectManager::GetInstance().objects[i]->~Object();
+						obj->isRenderable = false;
+						obj->~Object();
 					}
 				}
 			}
-		}	
-		// printf("\nGraphic Thread counter: %d", index);
-		// SDL_Delay(1);
+		}
 
-		if (SDL_mutexV(PhysicsManager::GetInstance().mut[index]) == -1)
+		if (SDL_mutexV(physics.mut[index]) == -1)
 		{
 			fprintf(stderr, "Couldn't unlock mutex\n");
 			exit(-1);
@@ -228,15 +226,15 @@ float PhysicsManager::Lerp(float a, float b, float x)
 
 void PhysicsManager::SendCollisionNotification() {}
 
-int PhysicsManager::SpawnParticles(std::string objPath, int x, int y, int size)
+int PhysicsManager::SpawnParticles(ObjectType type, Texture* tex, int x, int y, int size)
 {
 	switch (size)
 	{
 		case 4:
-			ObjectManager::GetInstance().objects.push_back(new Object(x, y, objPath));
-			ObjectManager::GetInstance().objects.push_back(new Object(x + 4, y, objPath));
-			ObjectManager::GetInstance().objects.push_back(new Object(x, y + 4, objPath));
-			ObjectManager::GetInstance().objects.push_back(new Object(x + 4, y + 4, objPath));
+			ObjectManager::GetInstance().objects.push_back(new Object(x, y, type, tex));
+			ObjectManager::GetInstance().objects.push_back(new Object(x + 4, y, type, tex));
+			ObjectManager::GetInstance().objects.push_back(new Object(x, y + 4, type, tex));
+			ObjectManager::GetInstance().objects.push_back(new Object(x + 4, y + 4, type, tex));
 			particleCounter += 4;
 			physicsStarted = true;
 
@@ -246,7 +244,7 @@ int PhysicsManager::SpawnParticles(std::string objPath, int x, int y, int size)
 			{
 				for (int j = 0; j < 4; j++)
 				{
-					ObjectManager::GetInstance().objects.push_back(new Object(x + (4 * j), y + (4 * i), objPath));
+					ObjectManager::GetInstance().objects.push_back(new Object(x + (4 * j), y + (4 * i), type, tex));
 				}
 			}
 			physicsStarted = true;
@@ -257,12 +255,12 @@ int PhysicsManager::SpawnParticles(std::string objPath, int x, int y, int size)
 			{
 				for (int j = 0; j < 8; j++)
 				{
-					ObjectManager::GetInstance().objects.push_back(new Object(x + (4 * j), y + (4 * i), objPath));
+					ObjectManager::GetInstance().objects.push_back(new Object(x + (4 * j), y + (4 * i), type, tex));
 				}
 			}
 			break;
 		default:
-			ObjectManager::GetInstance().objects.push_back(new Object(x, y, objPath));
+			ObjectManager::GetInstance().objects.push_back(new Object(x, y, type, tex));
 			physicsStarted = true;
 			particleCounter++;
 			break;
@@ -276,7 +274,7 @@ void PhysicsManager::InitializeMatrix()
 	{
 		for (int j = 0; j < columns; j++)
 		{
-			mat[j][i] = 0;
+			grid[j][i] = 0;
 		}
 	}
 }

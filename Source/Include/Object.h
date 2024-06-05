@@ -5,6 +5,14 @@
 #include <stdio.h>
 #include <string>
 
+enum class ObjectType {
+	Sand,
+	Wood,
+	Water,
+	Lava,
+	Smoke
+};
+
 class Object
 {
 private:
@@ -12,13 +20,16 @@ private:
 	const int SCREEN_HEIGHT = 1080;
 	float xPos;
 	float yPos;
+	Texture* texture;
 
 public:
 	static const int DOT_WIDTH = 4;
 	static const int DOT_HEIGHT = 4;
 	static const int DOT_VEL = 1;
+	ObjectType type;
+	bool settled = false;
 
-	Object(int mX, int mY, std::string mPath);
+	Object(int mX, int mY, ObjectType objectType, Texture* tex);
 	~Object();
 
 	//Takes key presses and adjusts the dot's velocity
@@ -37,5 +48,4 @@ public:
 	int mVelY = 4;
 	int mPosY = 0;
 	int mPosX = 0;
-	std::string objPath;
 };

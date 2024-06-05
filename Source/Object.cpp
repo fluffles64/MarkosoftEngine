@@ -1,11 +1,12 @@
 #include "Object.h"
 #include <unordered_map>
 
-Object::Object(int mX, int mY, std::string mPath)
+Object::Object(int mX, int mY, ObjectType objectType, Texture* tex)
 {
     mPosX = mX;
     mPosY = mY;
-    objPath = mPath;
+    type = objectType;
+    texture = tex;
 }
 
 Object::~Object() {}
@@ -71,21 +72,9 @@ void Object::move()
 
 void Object::render()
 {
-    // Map to store textures associated with object paths
-    static std::unordered_map<std::string, Texture*> textureMap = {
-        { "../../media/sand.png", GraphicManager::GetInstance().gSandTexture },
-        { "../../media/water.png", GraphicManager::GetInstance().gWaterTexture },
-        { "../../media/wood.png", GraphicManager::GetInstance().gWoodTexture },
-        { "../../media/lava.png", GraphicManager::GetInstance().gLavaTexture },
-        { "../../media/frame.png", GraphicManager::GetInstance().gFrameTexture },
-        { "../../media/smoke.png", GraphicManager::GetInstance().gSmokeTexture }
-    };
-
-    // Find the texture associated with the object path
-    auto it = textureMap.find(objPath);
-    if (it != textureMap.end())
+    // Render using the stored texture pointer
+    if (texture != nullptr)
     {
-        // Render the texture if found
-        it->second->render(mPosX, mPosY);
+        texture->render(mPosX, mPosY);
     }
 }

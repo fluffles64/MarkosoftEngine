@@ -5,7 +5,8 @@ void ObjectManager::Update(void) {}
 ObjectManager::ObjectManager()
 {
 	objects = std::vector<Object*>();
-	objects.reserve(1000000);
+	// Reserve objects depending on screen width * height
+	objects.reserve(2073600);
 }
 
 ObjectManager::~ObjectManager() {}

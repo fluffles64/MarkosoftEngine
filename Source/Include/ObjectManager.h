@@ -15,7 +15,6 @@ private:
 
 public:
 	std::vector<Object*> objects;
-	std::vector<Object*> settledObjects;
 	bool IsColliding();
 	void Update(void);
 };

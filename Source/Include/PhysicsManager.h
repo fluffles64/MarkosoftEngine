@@ -28,12 +28,14 @@ private:
 	PhysicsManager();
 
 public:
+	const int GRID_WIDTH = 480;
+	const int GRID_HEIGHT = 270;
 	std::vector<SDL_mutex*> mut = std::vector<SDL_mutex*>();
 	bool physicsStarted = false;
 	int particleCounter = 0;
 	bool spawnSmoke = false;
-	int mat[480][270];
-	int SpawnParticles(std::string objPath, int x, int y, int size);
+	int grid[480][270];
+	int SpawnParticles(ObjectType type, Texture* tex, int x, int y, int size);
 	void InitializeMatrix();
 	void SimulateParticles();
 	int RoundUp(int numToRound, int multiple);
