@@ -22,7 +22,7 @@ Developed as part of a university assignment for the *Game Engines* class, this 
 ## Changelog
 
 - **v1.0.0**:
-  - Addressed a known issue that caused FPS to drop when rendering too many textures at once. This is no longer the case.
+  - Addressed a known issue that caused FPS to drop when rendering too many textures at once.
 
 ## Requirements
 
