@@ -1,0 +1,1 @@
+SDL_ttf.dll and libfreetype-6.dll were copied manually from external

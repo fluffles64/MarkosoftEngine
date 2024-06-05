@@ -1,0 +1,10 @@
+﻿  GraphicManager.cpp
+  Object.cpp
+  ObjectManager.cpp
+  PhysicsManager.cpp
+C:\Users\Fluffles\Desktop\MarkosoftEngine\MarkosoftEngine\Source\PhysicsManager.cpp(16,21): warning C4018: '<': no coinciden signed/unsigned
+C:\Users\Fluffles\Desktop\MarkosoftEngine\MarkosoftEngine\Source\PhysicsManager.cpp(226,25): warning C4244: 'return': conversión de 'double' a 'float'; posible pérdida de datos
+  Generando código...
+SDL2_image.lib(SDL2_image.dll) : warning LNK4006: __NULL_IMPORT_DESCRIPTOR ya se definió en SDL2.lib(SDL2.dll); segunda definición omitida
+SDL2_ttf.lib(SDL2_ttf.dll) : warning LNK4006: __NULL_IMPORT_DESCRIPTOR ya se definió en SDL2.lib(SDL2.dll); segunda definición omitida
+  MarkosoftEngine.vcxproj -> C:\Users\Fluffles\Desktop\MarkosoftEngine\MarkosoftEngine\Project\Debug\MarkosoftEngine.lib

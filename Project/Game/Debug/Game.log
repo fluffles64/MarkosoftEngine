@@ -1,0 +1,8 @@
+﻿  Main.cpp
+C:\Users\Fluffles\Desktop\MarkosoftEngine\MarkosoftEngine\Source\Main.cpp(241,75): warning C4244: 'argumento': conversión de 'double' a 'int'; posible pérdida de datos
+C:\Users\Fluffles\Desktop\MarkosoftEngine\MarkosoftEngine\Source\Main.cpp(243,75): warning C4244: 'argumento': conversión de 'double' a 'int'; posible pérdida de datos
+C:\Users\Fluffles\Desktop\MarkosoftEngine\MarkosoftEngine\Source\Main.cpp(245,75): warning C4244: 'argumento': conversión de 'double' a 'int'; posible pérdida de datos
+C:\Users\Fluffles\Desktop\MarkosoftEngine\MarkosoftEngine\Source\Main.cpp(247,75): warning C4244: 'argumento': conversión de 'double' a 'int'; posible pérdida de datos
+C:\Users\Fluffles\Desktop\MarkosoftEngine\MarkosoftEngine\Source\Main.cpp(249,75): warning C4244: 'argumento': conversión de 'double' a 'int'; posible pérdida de datos
+C:\Users\Fluffles\Desktop\MarkosoftEngine\MarkosoftEngine\Source\Main.cpp(274): warning C4715: 'SDL_main': no todas las rutas de acceso de control devuelven un valor
+  Game.vcxproj -> C:\Users\Fluffles\Desktop\MarkosoftEngine\MarkosoftEngine\Project\Debug\Game.exe
