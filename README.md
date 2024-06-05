@@ -9,8 +9,8 @@ Developed as part of a university assignment for the *Game Engines* class, this 
 ## Media
 
 <div style="display:flex; justify-content:center;">
-    <img src="media/Image1.png" alt="Image 1" style="width: 50%; max-width: 300px;"/>
-    <img src="media/Image2.png" alt="Image 2" style="width: 49%; max-width: 300px;"/>
+    <img src="https://github.com/fluffles64/MarkosoftEngine/assets/61605339/ce765652-e5b6-42c4-ab14-02a4916c0371" alt="Gif" style="width: 50%; max-width: 300px;"/>
+    <img src="https://github.com/fluffles64/MarkosoftEngine/assets/61605339/f95217b0-5d75-40d5-88d8-9e74f4006a7f" alt="Image" style="width: 49%; max-width: 300px;"/>
 </div>
 
 ## Features
